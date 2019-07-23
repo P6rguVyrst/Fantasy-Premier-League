@@ -1,6 +1,6 @@
-import csv 
+import csv
 import os
-from utility import uprint
+from .utility import uprint
 import pandas as pd
 
 def extract_stat_names(dict_of_stats):

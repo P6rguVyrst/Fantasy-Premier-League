@@ -1,0 +1,8 @@
+,id,name,short_name,created,closed,rank,max_entries,league_type,scoring,admin_entry,start_event,entry_rank,entry_last_rank,entry_can_leave,entry_can_admin,entry_can_invite
+0,10,Liverpool,team-10,2019-06-25T11:25:45.054049Z,False,,,s,c,,1,0,0,False,False,False
+1,261,England,region-241,2019-06-25T11:25:48.920594Z,False,,,s,c,,1,0,0,False,False,False
+2,276,Gameweek 1,event-1,2019-06-25T11:25:49.137947Z,False,,,s,c,,1,0,0,False,False,False
+3,314,Overall,overall,2019-06-25T11:25:49.714514Z,False,,,s,c,,1,0,0,False,False,False
+4,5179,John Good Premiership 19/20,,2019-06-27T12:07:17.524926Z,False,,,x,c,15820.0,1,0,0,True,False,True
+5,71891,Bev Leisure Super 5's League,,2019-06-30T10:26:04.556870Z,False,,,x,c,79475.0,1,0,0,True,False,False
+6,174173,Longcroft League,,2019-07-09T11:48:10.862871Z,False,,,x,c,740406.0,1,0,0,True,False,False

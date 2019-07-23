@@ -3,7 +3,22 @@ Fantasy-Premier-League
 
 A FPL library that gets all the basic stats for each player, gw-specific data for each player and season history of each player
 
+
+
 ## FAQ
+
+### NEW: CLI Usage
+
+Installation:
+
+    pip install .
+
+Usage:
+
+    fpl --help
+    fpl team --team-id=5000
+    fpl team --team-id=5000 --season=19_20
+
 
 ### Data Structure
 
