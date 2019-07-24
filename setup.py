@@ -9,7 +9,7 @@ from setuptools import setup, find_packages
 
 requirements = ["Click>=6.0", "pandas", "requests"]
 setup_requirements = ["pytest-runner"]
-test_requirements = ["pytest"]
+test_requirements = ["pytest", "coverage"]
 
 setup(
     author="Vaastav Anand",
