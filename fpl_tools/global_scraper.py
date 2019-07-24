@@ -7,7 +7,7 @@ def parse_data():
     """ Parse and store all the data
     """
     print("Getting data")
-    data = get_data()
+    data = get_data("https://fantasy.premierleague.com/api/bootstrap-static/")
     season = '2019-20'
     base_filename = 'data/' + season + '/'
     print("Parsing summary data")
@@ -37,7 +37,7 @@ def parse_data():
         parse_player_gw_history(player_data["history"], player_base_filename, player_ids[i+1], i+1)
     if gw_num > 0:
         print("Collecting gw scores")
-        collect_gw(gw_num, player_base_filename, gw_base_filename) 
+        collect_gw(gw_num, player_base_filename, gw_base_filename)
         print("Merging gw scores")
         merge_gw(gw_num, gw_base_filename)
 
