@@ -1,6 +1,6 @@
 import os
-import sys
 import csv
+
 
 def merge_gw(gw, gw_directory):
     merged_gw_filename = "merged_gw.csv"
@@ -21,6 +21,7 @@ def merge_gw(gw, gw_directory):
         writer.writeheader()
     for row in rows:
         writer.writerow(row)
+
 
 def collect_gw(gw, directory_name, output_dir):
     rows = []
@@ -44,17 +45,12 @@ def collect_gw(gw, directory_name, output_dir):
     for row in rows:
         writer.writerow(row)
 
+
 def collect_all_gws(directory_name, output_dir):
     for i in range(1,5):
         collect_gw(i, directory_name, output_dir)
 
+
 def merge_all_gws(num_gws, gw_directory):
     for i in range(1, num_gws):
         merge_gw(i, gw_directory)
-
-def main():
-    #collect_all_gws(sys.argv[1], sys.argv[2])
-    merge_all_gws(int(sys.argv[1]), sys.argv[2])
-
-if __name__ == '__main__':
-    main()

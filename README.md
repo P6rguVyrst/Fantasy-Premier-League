@@ -19,6 +19,7 @@ Usage:
     fpl team --team-id=5000
     fpl team --team-id=5000 --season=19_20
 
+    fpl global
 
 ### Data Structure
 

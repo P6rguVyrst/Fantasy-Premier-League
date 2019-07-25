@@ -1,12 +1,11 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from requests.exceptions import RequestException
 import requests
 import json
 import time
-import logging
 import sys
-
-
-logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 
 def get_data(url):
@@ -91,11 +90,7 @@ def get_fixtures_data():
     return get_data_retry(url)
 
 
-def main():
+def deprecated_getter(**kwargs):
     data = get_data("https://fantasy.premierleague.com/api/bootstrap-static/")
     with open('raw.json', 'w') as outf:
         json.dump(data, outf)
-
-
-if __name__ == '__main__':
-    main()
