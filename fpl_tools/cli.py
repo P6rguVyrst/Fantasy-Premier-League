@@ -9,7 +9,6 @@ import logging
 import click
 from .scrapers import team_scraper, global_scraper
 from .collector import merge_all_gws, collect_all_gws
-from .getters import deprecated_getter
 
 
 @click.command()
@@ -21,13 +20,13 @@ from .getters import deprecated_getter
 def main(mode, season, team_id, gw_count, output_dir):
 
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+    client = FPLClient("https://fantasy.premierleague.com/api/")
 
     mode_router = {
-        "team": team_scraper,
-        "global": global_scraper,
-        "merge-gw": merge_all_gws,  # FIXIT: params. argv1 argv2
+        "team": cllent.team_scraper,
+        "global": client.global_scraper,
+        "merge-gw": merge_all_gws,
         "collect-gw": collect_all_gws, # IMPLEMENT
-        "get-data":  deprecated_getter,
     }
 
     allowed_modes = mode_router.keys()

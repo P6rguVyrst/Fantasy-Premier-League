@@ -1,14 +1,3 @@
-from fpl_tools.getters import (
-    get_data,
-    get_individual_player_data,
-    get_entry_data,
-    get_entry_personal_data,
-    get_entry_gws_data,
-    get_entry_transfers_data,
-    get_fixtures_data,
-)
-
-
 from pprint import pprint as pp
 import pytest
 

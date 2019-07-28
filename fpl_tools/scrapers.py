@@ -1,13 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from .getters import (
-    get_entry_data,
-    get_entry_personal_data,
-    get_data,
-    get_individual_player_data,
-    get_fixtures_data,
-)
 from .parsers import (
     parse_players,
     parse_team_data,
@@ -23,110 +16,108 @@ from .cleaners import (
 )
 from .collector import collect_gw, merge_gw
 from .exceptions import TeamIdError
-import sys
-import os
-from pandas import DataFrame
+from .utils import APIClient, assert_folder_exists
 
 
-def team_scraper(**kwargs):
+class FPLClient:
 
-    season = kwargs.get("season")
-    team_id = kwargs.get("team")
+    def __init__(self, fpl_api):
+        self.api = APIClient(fpl_api)
 
-    if not team_id:
-        raise TeamIdError("Usage: fpl teams -t 5000")
+    def team_scraper(self, **kwargs):
 
-    output_folder = "archive/team_{}_data{}".format(team_id, season)
-    assert_output_folder_exists(output_folder)
+        season = kwargs.get("season")
+        team_id = kwargs.get("team")
 
-    entrant_summary = get_entry_data(team_id)
-    write_to_csv(
-        entrant_summary.get("chips"),
-        '{}/chips.csv'.format(output_folder)
-    )
-    write_to_csv(
-        entrant_summary.get("past"),
-        '{}/history.csv'.format(output_folder)
-    )
-    write_to_csv(
-        entrant_summary.get("current"),
-        '{}/gws.csv'.format(output_folder)
-    )
+        if not team_id:
+            raise TeamIdError("Usage: fpl team --team-id 5000")
 
+        assert_folder_exists("archive/team_{}_data{}".format(team_id, season))
 
-    personal_data = get_entry_personal_data(team_id)
-    write_to_csv(
-        personal_data["leagues"].get("classic"),
-        '{}/classic_leagues.csv'.format(output_folder)
-    )
-    write_to_csv(
-        personal_data["leagues"].get("h2h"),
-        '{}/h2h_leagues.csv'.format(output_folder)
-    )
-    write_to_csv(
-        personal_data["leagues"].get("cup"),
-        '{}/cup_leagues.csv'.format(output_folder)
-    )
+        entrant_summary = self.api.get("entry/{}/history".format(team_id)).json()
+        personal_data = self.api.get("entry/{}".format(team_id)).json()
 
-    # The link does not seem to be providing the right information
-    # gws = get_entry_gws_data(team_id)
-    # transfers = get_entry_transfers_data(team_id)
-    # parse_transfer_history(transfers, output_folder)
-    # parse_gw_entry_history(gws, output_folder)
+        fpl_data = {
+            'chips.csv': entrant_summary.get("chips"),
+            'history.csv': entrant_summary.get("past"),
+            'gws.csv': entrant_summary.get("current"),
+            'classic_leagues.csv': personal_data["leagues"].get("classic"),
+            'h2h_leagues.csv': personal_data["leagues"].get("h2h"),
+            'cup_leagues.csv': personal_data["leagues"].get("cup"),
 
+        }
 
-def assert_output_folder_exists(output_folder):
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
+        for output_file, data in fpl_data:
+            write_to_csv(data, '{}/{}'.format(output_folder, output_file))
 
+        # The link does not seem to be providing the right information
+        # gws = get_entry_gws_data(team_id)
+        # endpoint = "entry/{}/transfers".format(team_id)
+        # transfers = self.api.get(endpoint).json()
+        # parse_transfer_history(transfers, output_folder)
+        # parse_gw_entry_history(gws, output_folder)
 
-def global_scraper(**kwargs):
-    """ Parse and store all the data
-    """
-    data = get_data("https://fantasy.premierleague.com/api/bootstrap-static/")
-    season = '2019-20'
-    base_filename = 'data/{}/'.format(season)
+    def global_scraper(self, **kwargs):
+        """ Parse and store all the data
+        """
+        endpoint = "bootstrap-static/"
+        data = self.api.get(endpoint).json()
+        season = '2019-20'
+        base_filename = 'data/{}/'.format(season)
 
-    parse_players(data["elements"], base_filename)
+        parse_players(data["elements"], base_filename)
 
-    try:
-        gw_num = data["current-event"]
-    except Exception:
-        gw_num = 0
+        try:
+            gw_num = data["current-event"]
+        except Exception:
+            gw_num = 0
 
-    clean_players(base_filename + 'players_raw.csv', base_filename)
-    fixtures(base_filename)
+        clean_players(base_filename + 'players_raw.csv', base_filename)
 
-    if gw_num == 0:
-        parse_team_data(data["teams"], base_filename)
+        fixtures = self.api.get("fixtures/").json()
+        parse_fixtures(fixtures, base_filename)
 
-    id_players(base_filename + 'players_raw.csv', base_filename)
-    player_ids = get_player_ids(base_filename)
+        if gw_num == 0:
+            parse_team_data(data["teams"], base_filename)
 
-    player_base_filename = base_filename + 'players/'
-    gw_base_filename = base_filename + 'gws/'
+        id_players(base_filename + 'players_raw.csv', base_filename)
+        player_ids = get_player_ids(base_filename)
 
-    for player_id in range(len(data["elements"])):
-        player_id += 1
-        player_data = get_individual_player_data(player_id)
-        parse_player_history(
-            player_data.get("history_past"),
-            player_base_filename,
-            player_ids.get(player_id),
-            player_id,
-        )
-        parse_player_gw_history(
-            player_data.get("history"),
-            player_base_filename,
-            player_ids.get(player_id),
-            player_id,
-        )
+        player_base_filename = base_filename + 'players/'
+        gw_base_filename = base_filename + 'gws/'
 
-    if gw_num > 0:
-        collect_gw(gw_num, player_base_filename, gw_base_filename)
-        merge_gw(gw_num, gw_base_filename)
+        for player_id in range(len(data["elements"])):
+            player_id += 1
+            endpoint =  "element-summary/{}".format(player_id)
+            player_data = self.api.get(endpoint).json()
+            parse_player_history(
+                player_data.get("history_past"),
+                player_base_filename,
+                player_ids.get(player_id),
+                player_id,
+            )
+            parse_player_gw_history(
+                player_data.get("history"),
+                player_base_filename,
+                player_ids.get(player_id),
+                player_id,
+            )
 
+        if gw_num > 0:
+            collect_gw(gw_num, player_base_filename, gw_base_filename)
+            merge_gw(gw_num, gw_base_filename)
 
-def fixtures(base_filename):
-    data = get_fixtures_data()
-    parse_fixtures(data, base_filename)
+    #FIXIT: unused, get rid of the list. deprecated api endpoint.
+    def get_entry_gws_data(self, entry_id):
+        """ Retrieve the gw-by-gw data for a specific entry/team
+
+        Args:
+            entry_id (int) : ID of the team whose data is to be retrieved
+        """
+        base_url = "https://fantasy.premierleague.com/api/entry/"
+        gw_data = []
+        for i in range(1, 39):
+            endpoint = "entry/{}/event/{}".format(entry_id, i)
+            response = api.get(endpoint).json()
+            gw_data += [response]
+        return response
