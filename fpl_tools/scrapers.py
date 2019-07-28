@@ -60,52 +60,50 @@ class FPLClient:
     def global_scraper(self, **kwargs):
         """ Parse and store all the data
         """
-        endpoint = "bootstrap-static/"
-        data = self.api.get(endpoint).json()
-        season = '2019-20'
-        base_filename = 'data/{}/'.format(season)
+        season = kwargs.get("season")
+        output_folder = 'data/{}/'.format(season)
 
-        parse_players(data["elements"], base_filename)
+        data = self.api.get("bootstrap-static/").json()
 
-        try:
-            gw_num = data["current-event"]
-        except Exception:
-            gw_num = 0
+        parse_players(data["elements"], output_folder)
+        clean_players('players_raw.csv', output_folder)
 
-        clean_players(base_filename + 'players_raw.csv', base_filename)
+        self._fixtures(output_folder)
 
-        fixtures = self.api.get("fixtures/").json()
-        parse_fixtures(fixtures, base_filename)
+        gw_num = data.get("current-event", 0)
 
         if gw_num == 0:
-            parse_team_data(data["teams"], base_filename)
+            parse_team_data(data["teams"], output_folder)
 
-        id_players(base_filename + 'players_raw.csv', base_filename)
-        player_ids = get_player_ids(base_filename)
+        self._assets(data, output_folder)
 
-        player_base_filename = base_filename + 'players/'
-        gw_base_filename = base_filename + 'gws/'
+        if gw_num > 0:
+            collect_gw(gw_num, player_output_folder, '{}/gws/'.format(output_folder))
+            merge_gw(gw_num, gw_output_folder)
 
+    def _fixtures(self, output_folder):
+        fixtures = self.api.get("fixtures/").json()
+        parse_fixtures(fixtures, output_folder)
+
+    def _assets(self, data, output_folder):
+        id_players('players_raw.csv', output_folder)
+        player_ids = get_player_ids(output_folder)
         for player_id in range(len(data["elements"])):
             player_id += 1
             endpoint =  "element-summary/{}".format(player_id)
             player_data = self.api.get(endpoint).json()
             parse_player_history(
                 player_data.get("history_past"),
-                player_base_filename,
+                '{}/players/'.format(output_folder),
                 player_ids.get(player_id),
                 player_id,
             )
             parse_player_gw_history(
                 player_data.get("history"),
-                player_base_filename,
+                '{}/players/'.format(output_folder),
                 player_ids.get(player_id),
                 player_id,
             )
-
-        if gw_num > 0:
-            collect_gw(gw_num, player_base_filename, gw_base_filename)
-            merge_gw(gw_num, gw_base_filename)
 
     #FIXIT: unused, get rid of the list. deprecated api endpoint.
     def get_entry_gws_data(self, entry_id):

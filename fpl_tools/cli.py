@@ -7,7 +7,7 @@
 import sys
 import logging
 import click
-from .scrapers import team_scraper, global_scraper
+from .scrapers import FPLClient
 from .collector import merge_all_gws, collect_all_gws
 
 
@@ -23,7 +23,7 @@ def main(mode, season, team_id, gw_count, output_dir):
     client = FPLClient("https://fantasy.premierleague.com/api/")
 
     mode_router = {
-        "team": cllent.team_scraper,
+        "team": client.team_scraper,
         "global": client.global_scraper,
         "merge-gw": merge_all_gws,
         "collect-gw": collect_all_gws, # IMPLEMENT
