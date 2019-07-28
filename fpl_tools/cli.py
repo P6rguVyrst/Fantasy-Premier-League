@@ -16,7 +16,9 @@ from .getters import deprecated_getter
 @click.argument("mode")
 @click.option("-s", "--season", default="19_20", help="Premier League season")
 @click.option("-t", "--team-id", help="USAGE: fpl team --team-id=5000")
-def main(mode, season, team_id):
+@click.option("-g", "--gw-count", help="")
+@click.option("-f", "--output-dir", help="Output directory")
+def main(mode, season, team_id, gw_count, output_dir):
 
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
@@ -33,7 +35,13 @@ def main(mode, season, team_id):
     if mode not in allowed_modes:
         raise NotImplementedError("mode: {} - not implemented, available arguments: {}".format(mode, allowed_modes))
 
-    mode_router[mode](season=season, team_id=team_id)
+    kwargs = dict()
+    kwargs["season"] = season
+    kwargs["team"] = team_id
+    kwargs["gw"] = gw_count
+    kwargs["dir"] = output_dir
+
+    mode_router[mode](**kwargs)
 
     return 0
 

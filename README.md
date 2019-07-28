@@ -21,6 +21,8 @@ Usage:
 
     fpl global
 
+    fpl merge-gw -g 2 -f fpl_tools/data/2016-17/gws/
+
 ### Data Structure
 
 The data folder contains the data from past seasons as well as the current season. It is structured as follows:

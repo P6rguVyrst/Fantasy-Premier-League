@@ -7,8 +7,6 @@ from fpl_tools.getters import (
     get_entry_transfers_data,
     get_fixtures_data,
 )
-from fpl_tools.parsers import parse_entry_history, parse_entry_leagues
-
 
 
 from pprint import pprint as pp
@@ -74,23 +72,3 @@ def test_get_fixtures_data(api_client_fixture, fixtures):
         response_body=fixtures
     ).json()
     assert isinstance(response, list)
-
-
-# TEAM SCRAPER: start
-def test_parse_entry_history(entry_fixture_history):
-    required_keys = ["chips", "past", "current"]
-    # summary, output_folder
-    # summary = get_entry_data(team_id)
-    #pp(entry_fixture_history)
-    #x = parse_entry_history(entry_fixture_history)
-
-
-def test_parse_entry_leagues(entry_fixture):
-    required_keys = ["leagues"]
-    # personal_data, output_folder
-    # personal_data = get_entry_personal_data(team_id)
-    #pp(entry_fixture)
-    parse_entry_leagues(entry_fixture, "")
-# TEAM SCRAPER: end
-
-

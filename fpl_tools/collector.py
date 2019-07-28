@@ -51,6 +51,10 @@ def collect_all_gws(directory_name, output_dir):
         collect_gw(i, directory_name, output_dir)
 
 
-def merge_all_gws(num_gws, gw_directory):
+def merge_all_gws(**kwargs):
+
+    num_gws = int(kwargs.get("gw"))
+    gw_directory = kwargs.get("dir")
+
     for i in range(1, num_gws):
         merge_gw(i, gw_directory)

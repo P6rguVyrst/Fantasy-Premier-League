@@ -2,10 +2,14 @@
 # -*- coding: utf-8 -*-
 
 from requests.exceptions import RequestException
+import logging
 import requests
 import json
 import time
 import sys
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 def get_data(url):
@@ -15,17 +19,18 @@ def get_data(url):
     if response.ok:
         return response.json()
     else:
-        raise RequestException("Response code: {}".format(response.status_code))
-
+        LOGGER.warning("Response code: {}".format(response.status_code))
+        return response.json()
 
 def get_data_retry(url):
-    response = False
-    while not response:
-        try:
-            response = get_data(url)
-        except:
-            time.sleep(5)
-    return response
+    #response = False
+    #while not response:
+    #    try:
+    #        response = get_data(url)
+    #    except:
+    #        time.sleep(5)
+    #return response
+    return get_data(url)
 
 
 def get_individual_player_data(player_id):

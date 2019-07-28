@@ -9,13 +9,12 @@ from .getters import (
     get_fixtures_data,
 )
 from .parsers import (
-    parse_entry_history,
-    parse_entry_leagues,
     parse_players,
     parse_team_data,
     parse_player_history,
     parse_player_gw_history,
     parse_fixtures,
+    write_to_csv,
 )
 from .cleaners import (
     clean_players,
@@ -26,25 +25,54 @@ from .collector import collect_gw, merge_gw
 from .exceptions import TeamIdError
 import sys
 import os
+from pandas import DataFrame
 
 
-def team_scraper(season, team_id):
+def team_scraper(**kwargs):
+
+    season = kwargs.get("season")
+    team_id = kwargs.get("team")
 
     if not team_id:
-        raise TeamIdError("Usage: python teams_scraper.py <team_id>. Eg: python teams_scraper.py 5000")
+        raise TeamIdError("Usage: fpl teams -t 5000")
 
     output_folder = "archive/team_{}_data{}".format(team_id, season)
     assert_output_folder_exists(output_folder)
 
-    summary = get_entry_data(team_id)
+    entrant_summary = get_entry_data(team_id)
+    write_to_csv(
+        entrant_summary.get("chips"),
+        '{}/chips.csv'.format(output_folder)
+    )
+    write_to_csv(
+        entrant_summary.get("past"),
+        '{}/history.csv'.format(output_folder)
+    )
+    write_to_csv(
+        entrant_summary.get("current"),
+        '{}/gws.csv'.format(output_folder)
+    )
+
+
     personal_data = get_entry_personal_data(team_id)
+    write_to_csv(
+        personal_data["leagues"].get("classic"),
+        '{}/classic_leagues.csv'.format(output_folder)
+    )
+    write_to_csv(
+        personal_data["leagues"].get("h2h"),
+        '{}/h2h_leagues.csv'.format(output_folder)
+    )
+    write_to_csv(
+        personal_data["leagues"].get("cup"),
+        '{}/cup_leagues.csv'.format(output_folder)
+    )
+
     # The link does not seem to be providing the right information
-    #gws = get_entry_gws_data(team_id)
-    #transfers = get_entry_transfers_data(team_id)
-    parse_entry_history(summary, output_folder)
-    parse_entry_leagues(personal_data, output_folder)
-    #parse_transfer_history(transfers, output_folder)
-    #parse_gw_entry_history(gws, output_folder)
+    # gws = get_entry_gws_data(team_id)
+    # transfers = get_entry_transfers_data(team_id)
+    # parse_transfer_history(transfers, output_folder)
+    # parse_gw_entry_history(gws, output_folder)
 
 
 def assert_output_folder_exists(output_folder):
@@ -82,15 +110,15 @@ def global_scraper(**kwargs):
         player_id += 1
         player_data = get_individual_player_data(player_id)
         parse_player_history(
-            player_data["history_past"],
+            player_data.get("history_past"),
             player_base_filename,
-            player_ids[player_id],
+            player_ids.get(player_id),
             player_id,
         )
         parse_player_gw_history(
-            player_data["history"],
+            player_data.get("history"),
             player_base_filename,
-            player_ids[player_id],
+            player_ids.get(player_id),
             player_id,
         )
 
