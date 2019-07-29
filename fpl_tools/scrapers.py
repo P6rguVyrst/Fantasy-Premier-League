@@ -10,7 +10,6 @@ from .parsers import (
     write_to_csv,
 )
 from .cleaners import (
-    clean_players,
     id_players,
     get_player_ids,
 )
@@ -60,25 +59,20 @@ class FPLClient:
     def global_scraper(self, **kwargs):
         """ Parse and store all the data
         """
-        season = kwargs.get("season")
-        output_folder = 'data/{}/'.format(season)
-
+        output_folder = kwargs.get("dir")
         data = self.api.get("bootstrap-static/").json()
+        gw_num = data.get("current-event", 0)
 
         parse_players(data["elements"], output_folder)
-        clean_players('players_raw.csv', output_folder)
-
-        self._fixtures(output_folder)
-
-        gw_num = data.get("current-event", 0)
 
         if gw_num == 0:
             parse_team_data(data["teams"], output_folder)
 
+        self._fixtures(output_folder)
         self._assets(data, output_folder)
 
         if gw_num > 0:
-            collect_gw(gw_num, player_output_folder, '{}/gws/'.format(output_folder))
+            collect_gw(gw_num, output_folder)
             merge_gw(gw_num, gw_output_folder)
 
     def _fixtures(self, output_folder):

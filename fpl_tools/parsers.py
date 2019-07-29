@@ -1,7 +1,7 @@
 import csv
 import os
 import pandas as pd
-
+from .cleaners import clean_players
 
 def extract_stat_names(dict_of_stats):
     """ Extracts all the names of the statistics
@@ -14,20 +14,22 @@ def extract_stat_names(dict_of_stats):
         stat_names += [key]
     return stat_names
 
-def parse_players(list_of_players, base_filename):
+def parse_players(list_of_players, output_folder):
     stat_names = extract_stat_names(list_of_players[0])
-    filename = base_filename + 'players_raw.csv'
+    filename = output_folder + 'players_raw.csv'
     os.makedirs(os.path.dirname(filename), exist_ok=True)
     f = open(filename, 'w+', encoding='utf8', newline='')
     w = csv.DictWriter(f, sorted(stat_names))
     w.writeheader()
     for player in list_of_players:
             w.writerow({k:str(v).encode('utf-8').decode('utf-8') for k, v in player.items()})
+    clean_players('players_raw.csv', output_folder)
 
-def parse_player_history(list_of_histories, base_filename, player_name, Id):
+
+def parse_player_history(list_of_histories, output_folder, player_name, Id):
     if list_of_histories:
         stat_names = extract_stat_names(list_of_histories[0])
-        filename = base_filename + player_name + '_' + str(Id) + '/history.csv'
+        filename = output_folder + player_name + '_' + str(Id) + '/history.csv'
         os.makedirs(os.path.dirname(filename), exist_ok=True)
         f = open(filename, 'w+', encoding='utf8', newline='')
         w = csv.DictWriter(f, sorted(stat_names))
@@ -35,10 +37,10 @@ def parse_player_history(list_of_histories, base_filename, player_name, Id):
         for history in list_of_histories:
             w.writerow(history)
 
-def parse_player_gw_history(list_of_gw, base_filename, player_name, Id):
+def parse_player_gw_history(list_of_gw, output_folder, player_name, Id):
     if list_of_gw:
         stat_names = extract_stat_names(list_of_gw[0])
-        filename = base_filename + player_name + '_' + str(Id) + '/gw.csv'
+        filename = output_folder + player_name + '_' + str(Id) + '/gw.csv'
         os.makedirs(os.path.dirname(filename), exist_ok=True)
         f = open(filename, 'w+', encoding='utf8', newline='')
         w = csv.DictWriter(f, sorted(stat_names))

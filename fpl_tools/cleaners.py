@@ -22,10 +22,9 @@ def clean_players(filename, output_folder):
     outname = output_folder + 'cleaned_players.csv'
     os.makedirs(os.path.dirname(outname), exist_ok=True)
     fout = open(outname, 'w+', encoding='utf-8', newline='')
-    reader = csv.DictReader(fin)
     writer = csv.DictWriter(fout, headers, extrasaction='ignore')
     writer.writeheader()
-    for line in reader:
+    for line in csv.DictReader(fin):
         writer.writerow(line)
 
 def id_players(filename, output_folder):
@@ -40,10 +39,10 @@ def id_players(filename, output_folder):
     outname = output_folder + 'player_idlist.csv'
     os.makedirs(os.path.dirname(outname), exist_ok=True)
     fout = open(outname, 'w+', encoding='utf-8', newline='')
-    reader = csv.DictReader(fin)
     writer = csv.DictWriter(fout, headers, extrasaction='ignore')
     writer.writeheader()
-    for line in reader:
+
+    for line in csv.DictReader(fin):
         writer.writerow(line)
 
 def get_player_ids(output_folder):

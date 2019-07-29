@@ -23,7 +23,11 @@ def merge_gw(gw, gw_directory):
         writer.writerow(row)
 
 
-def collect_gw(gw, directory_name, output_dir):
+def collect_gw(gw, output_folfer):
+
+    directory_name = output_folder + "players/"
+    output_dir = output_folder + "gws/"
+
     rows = []
     fieldnames = []
     for root, dirs, files in os.walk(u"./" + directory_name):
@@ -46,9 +50,9 @@ def collect_gw(gw, directory_name, output_dir):
         writer.writerow(row)
 
 
-def collect_all_gws(directory_name, output_dir):
+def collect_all_gws(output_folder):
     for i in range(1,5):
-        collect_gw(i, directory_name, output_dir)
+        collect_gw(i, output_folder)
 
 
 def merge_all_gws(**kwargs):
