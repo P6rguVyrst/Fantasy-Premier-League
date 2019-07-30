@@ -27,6 +27,7 @@ class FPLClient:
 
         season = kwargs.get("season")
         team_id = kwargs.get("team")
+        output_folder = kwargs.get("dir")
 
         if not team_id:
             raise TeamIdError("Usage: fpl team --team-id 5000")
@@ -43,10 +44,9 @@ class FPLClient:
             'classic_leagues.csv': personal_data["leagues"].get("classic"),
             'h2h_leagues.csv': personal_data["leagues"].get("h2h"),
             'cup_leagues.csv': personal_data["leagues"].get("cup"),
-
         }
 
-        for output_file, data in fpl_data:
+        for output_file, data in fpl_data.items():
             write_to_csv(data, '{}/{}'.format(output_folder, output_file))
 
         # The link does not seem to be providing the right information
@@ -59,18 +59,21 @@ class FPLClient:
     def global_scraper(self, **kwargs):
         """ Parse and store all the data
         """
+        # How should I pass a dummy API here
         output_folder = kwargs.get("dir")
         data = self.api.get("bootstrap-static/").json()
+        self._global_parser(data, output_folder)
+
+    def _global_parser(self, data, output_folder):
+
         gw_num = data.get("current-event", 0)
-
         parse_players(data["elements"], output_folder)
-
-        if gw_num == 0:
-            parse_team_data(data["teams"], output_folder)
 
         self._fixtures(output_folder)
         self._assets(data, output_folder)
 
+        if gw_num == 0:
+            parse_team_data(data["teams"], output_folder)
         if gw_num > 0:
             collect_gw(gw_num, output_folder)
             merge_gw(gw_num, gw_output_folder)

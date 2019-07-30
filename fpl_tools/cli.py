@@ -10,13 +10,13 @@ import click
 from .scrapers import FPLClient
 from .collector import merge_all_gws, collect_all_gws
 
-
 @click.command()
 @click.argument("mode")
 @click.option("-t", "--team-id", help="USAGE: fpl team --team-id=5000")
-@click.option("-g", "--gw-count", help="")
+@click.option("-g", "--gw-count", default=0, help="")
+@click.option("-s", "--season", default="19_20", help="")
 @click.option("-f", "--output-dir", default="data/19_20/", help="Output directory")
-def main(mode, team_id, gw_count, output_dir):
+def main(mode, team_id, gw_count, season, output_dir):
 
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
     client = FPLClient("https://fantasy.premierleague.com/api/")

@@ -23,6 +23,29 @@ Usage:
 
     fpl merge-gw -g 2 -f fpl_tools/data/2016-17/gws/
 
+### NEW: Development
+
+Running the tests:
+
+    py.test -sv --cov=fpl_tools
+
+Coverage:
+
+    ---------- coverage: platform darwin, python 3.7.4-final-0 -----------
+    Name                      Stmts   Miss  Cover
+    ---------------------------------------------
+    fpl_tools/__init__.py         0      0   100%
+    fpl_tools/cleaners.py        35      0   100%
+    fpl_tools/cli.py             26      2    92%
+    fpl_tools/collector.py       51     45    12%
+    fpl_tools/exceptions.py       2      0   100%
+    fpl_tools/parsers.py         55     14    75%
+    fpl_tools/scrapers.py        54     10    81%
+    fpl_tools/utils.py           16      1    94%
+    ---------------------------------------------
+    TOTAL                       239     72    70%
+
+
 ### Data Structure
 
 The data folder contains the data from past seasons as well as the current season. It is structured as follows:
