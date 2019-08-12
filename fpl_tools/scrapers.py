@@ -2,16 +2,12 @@
 # -*- coding: utf-8 -*-
 
 from .parsers import (
-    parse_players,
+    Asset,
     parse_team_data,
     parse_player_history,
     parse_player_gw_history,
     parse_fixtures,
     write_to_csv,
-)
-from .cleaners import (
-    id_players,
-    get_player_ids,
 )
 from .collector import collect_gw, merge_gw
 from .exceptions import TeamIdError
@@ -49,12 +45,6 @@ class FPLClient:
         for output_file, data in fpl_data.items():
             write_to_csv(data, '{}/{}'.format(output_folder, output_file))
 
-        # The link does not seem to be providing the right information
-        # gws = get_entry_gws_data(team_id)
-        # endpoint = "entry/{}/transfers".format(team_id)
-        # transfers = self.api.get(endpoint).json()
-        # parse_transfer_history(transfers, output_folder)
-        # parse_gw_entry_history(gws, output_folder)
 
     def global_scraper(self, **kwargs):
         """ Parse and store all the data
@@ -66,25 +56,13 @@ class FPLClient:
 
     def _global_parser(self, data, output_folder):
 
-        gw_num = data.get("current-event", 0)
-        parse_players(data["elements"], output_folder)
+        # TODO: fix fx input params.
+        push = Asset(data, output_folder)
+        push.parse_players()
+        push.id_players()
 
-        self._fixtures(output_folder)
-        self._assets(data, output_folder)
+        player_ids = push.get_player_ids()
 
-        if gw_num == 0:
-            parse_team_data(data["teams"], output_folder)
-        if gw_num > 0:
-            collect_gw(gw_num, output_folder)
-            merge_gw(gw_num, gw_output_folder)
-
-    def _fixtures(self, output_folder):
-        fixtures = self.api.get("fixtures/").json()
-        parse_fixtures(fixtures, output_folder)
-
-    def _assets(self, data, output_folder):
-        id_players('players_raw.csv', output_folder)
-        player_ids = get_player_ids(output_folder)
         for player_id in range(len(data["elements"])):
             player_id += 1
             endpoint =  "element-summary/{}".format(player_id)
@@ -102,17 +80,16 @@ class FPLClient:
                 player_id,
             )
 
-    #FIXIT: unused, get rid of the list. deprecated api endpoint.
-    def get_entry_gws_data(self, entry_id):
-        """ Retrieve the gw-by-gw data for a specific entry/team
+        self._assets(data, output_folder)
+        self._fixtures(output_folder)
 
-        Args:
-            entry_id (int) : ID of the team whose data is to be retrieved
-        """
-        base_url = "https://fantasy.premierleague.com/api/entry/"
-        gw_data = []
-        for i in range(1, 39):
-            endpoint = "entry/{}/event/{}".format(entry_id, i)
-            response = api.get(endpoint).json()
-            gw_data += [response]
-        return response
+        gw_num = data.get("current-event", 0)
+        if gw_num == 0:
+            parse_team_data(data["teams"], output_folder)
+        if gw_num > 0:
+            collect_gw(gw_num, output_folder)
+            merge_gw(gw_num, gw_output_folder)
+
+    def _fixtures(self, output_folder):
+        fixtures = self.api.get("fixtures/").json()
+        parse_fixtures(fixtures, output_folder)
