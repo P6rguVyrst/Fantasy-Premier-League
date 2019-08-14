@@ -3,7 +3,6 @@
 
 import csv
 import os
-import pandas as pd
 
 
 class Asset:
@@ -34,7 +33,7 @@ class Asset:
         for line in csv.DictReader(fin):
             writer.writerow(line)
 
-    def get_player_ids(self):
+    def _get_player_ids(self):
         """ Gets the list of all player ids and player names
         """
         filename = self.output_dir + 'player_idlist.csv'
@@ -84,44 +83,26 @@ class Asset:
         for line in csv.DictReader(fin):
             writer.writerow(line)
 
+    def parse_player_history(self, list_of_histories, _id):
+        player_name = self._get_player_ids(_id)
+        if list_of_histories:
+            stat_names = extract_stat_names(list_of_histories[0])
+            filename = self.output_dir + '/players/' + player_name + '_' + str(_id) + '/history.csv'
+            os.makedirs(os.path.dirname(filename), exist_ok=True)
+            f = open(filename, 'w+', encoding='utf8', newline='')
+            w = csv.DictWriter(f, sorted(stat_names))
+            w.writeheader()
+            for history in list_of_histories:
+                w.writerow(history)
 
-def parse_player_history(list_of_histories, output_folder, player_name, Id):
-    if list_of_histories:
-        stat_names = extract_stat_names(list_of_histories[0])
-        filename = output_folder + player_name + '_' + str(Id) + '/history.csv'
-        os.makedirs(os.path.dirname(filename), exist_ok=True)
-        f = open(filename, 'w+', encoding='utf8', newline='')
-        w = csv.DictWriter(f, sorted(stat_names))
-        w.writeheader()
-        for history in list_of_histories:
-            w.writerow(history)
-
-def parse_player_gw_history(list_of_gw, output_folder, player_name, Id):
-    if list_of_gw:
-        stat_names = extract_stat_names(list_of_gw[0])
-        filename = output_folder + player_name + '_' + str(Id) + '/gw.csv'
-        os.makedirs(os.path.dirname(filename), exist_ok=True)
-        f = open(filename, 'w+', encoding='utf8', newline='')
-        w = csv.DictWriter(f, sorted(stat_names))
-        w.writeheader()
-        for gw in list_of_gw:
-            w.writerow(gw)
-
-
-def write_to_csv(data, output_file):
-    if data:
-        pd.DataFrame.from_records(data).to_csv(output_file)
-    else:
-        print('No data for {}'.format(output_file))
-
-
-def parse_fixtures(data, output_folder):
-    pd.DataFrame.from_records(data).to_csv(
-        '{}/fixtures.csv'.format(output_folder), index=False
-    )
-
-
-def parse_team_data(data, output_folder):
-    pd.DataFrame.from_records(data).to_csv(
-        '{}/teams.csv'.format(output_folder), index=False
-    )
+    def parse_player_gw_history(self, list_of_gw, _id):
+        player_name = self._get_player_ids(_id)
+        if list_of_gw:
+            stat_names = extract_stat_names(list_of_gw[0])
+            filename = self.output_dir + '/players/' + player_name + '_' + str(_id) + '/gw.csv'
+            os.makedirs(os.path.dirname(filename), exist_ok=True)
+            f = open(filename, 'w+', encoding='utf8', newline='')
+            w = csv.DictWriter(f, sorted(stat_names))
+            w.writeheader()
+            for gw in list_of_gw:
+                w.writerow(gw)

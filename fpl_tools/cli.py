@@ -19,7 +19,7 @@ from .collector import merge_all_gws, collect_all_gws
 def main(mode, team_id, gw_count, season, output_dir):
 
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
-    client = FPLClient("https://fantasy.premierleague.com/api/")
+    client = FPLClient("https://fantasy.premierleague.com/api/", output_dir)
 
     mode_router = {
         "team": client.team_scraper,

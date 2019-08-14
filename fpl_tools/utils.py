@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
 import logging
 import requests
 
@@ -21,8 +20,3 @@ class APIClient:
 
     def get(self, endpoint):
         return self.__request("GET", endpoint)
-
-
-def assert_folder_exists(output_folder):
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
