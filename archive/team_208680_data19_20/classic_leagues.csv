@@ -1,6 +1,0 @@
-,id,name,short_name,created,closed,rank,max_entries,league_type,scoring,admin_entry,start_event,entry_rank,entry_last_rank,entry_can_leave,entry_can_admin,entry_can_invite
-0,87,Estonia,region-67,2019-06-25T11:25:46.225236Z,False,,,s,c,,1,964,0,False,False,False
-1,276,Gameweek 1,event-1,2019-06-25T11:25:49.137947Z,False,,,s,c,,1,1554081,0,False,False,False
-2,314,Overall,overall,2019-06-25T11:25:49.714514Z,False,,,s,c,,1,1554081,0,False,False,False
-3,183854,League 183854,,2019-07-10T08:36:44.546490Z,True,,,c,c,,1,7,0,True,False,False
-4,473455,Proper Shinpads,,2019-07-29T19:13:39.867997Z,False,,,x,c,1967578.0,1,6,0,True,False,False
