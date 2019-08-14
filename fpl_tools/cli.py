@@ -37,6 +37,7 @@ def main(mode, team_id, gw_count, season, output_dir):
     kwargs["team"] = team_id
     kwargs["gw"] = gw_count
     kwargs["dir"] = output_dir
+    kwargs["season"] = season
 
     mode_router[mode](**kwargs)
 

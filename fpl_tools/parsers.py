@@ -84,10 +84,10 @@ class Asset:
             writer.writerow(line)
 
     def parse_player_history(self, list_of_histories, _id):
-        player_name = self._get_player_ids(_id)
+        player_name = self._get_player_ids().get(_id)
         if list_of_histories:
-            stat_names = extract_stat_names(list_of_histories[0])
-            filename = self.output_dir + '/players/' + player_name + '_' + str(_id) + '/history.csv'
+            stat_names = self._extract_stat_names(list_of_histories[0])
+            filename = self.output_dir + 'players/' + player_name + '_' + str(_id) + '/history.csv'
             os.makedirs(os.path.dirname(filename), exist_ok=True)
             f = open(filename, 'w+', encoding='utf8', newline='')
             w = csv.DictWriter(f, sorted(stat_names))
@@ -96,10 +96,10 @@ class Asset:
                 w.writerow(history)
 
     def parse_player_gw_history(self, list_of_gw, _id):
-        player_name = self._get_player_ids(_id)
+        player_name = self._get_player_ids().get(_id)
         if list_of_gw:
-            stat_names = extract_stat_names(list_of_gw[0])
-            filename = self.output_dir + '/players/' + player_name + '_' + str(_id) + '/gw.csv'
+            stat_names = self._extract_stat_names(list_of_gw[0])
+            filename = self.output_dir + 'players/' + player_name + '_' + str(_id) + '/gw.csv'
             os.makedirs(os.path.dirname(filename), exist_ok=True)
             f = open(filename, 'w+', encoding='utf8', newline='')
             w = csv.DictWriter(f, sorted(stat_names))

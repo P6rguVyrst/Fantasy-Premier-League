@@ -48,7 +48,7 @@ class FPLClient:
         }
 
         for output_file, data in fpl_data.items():
-            write_to_csv(data, '{}/{}'.format(self.output_dir, output_file))
+            self.write_to_csv(data, 'archive/team_{}_data{}/{}'.format(team_id, season, output_file))
 
 
     def global_scraper(self, **kwargs):
